@@ -19,49 +19,52 @@ nome_usuario = "José"
 
 while True:
     for i in range(3):
-        conta =input("Entre com a sua conta corrente: ")
-        senha =input("Entre com a sua senha")
-        if conta==conta_corrente and senha==senha_usuario:
-            print(f"Seja Bem-Vindo {nome_usuario}")
-            acesso_permitido=True
+        conta = input("Entre com a sua conta corrente: ")
+        senha = input("Entre com a sua senha")
+        if conta == conta_corrente and senha == senha_usuario:
+            print(f"Seja Bem-Vindo {nome_usuario}!")
+            acesso_permitido = True
             break
         else:
-            print("Usuario ou Senha Invalidos")
+            print("Usuario ou Senha Inválidos")
             acesso_permitido=False
+
     if not acesso_permitido:
         break
 
     while True:
         opcao = input("Escolha uma Opção:\n" \
-        "1 - Ver Saldo.\n" \
-        "2 - Sacar Valor.\n" \
-        "3 - Depositar.\n" \
-        "4 - Pagar Boleto.\n" \
-        "5 - Alterar Senha.\n" \
-        "6 - Sair.\n" \)
+            "1 - Ver Saldo.\n" \
+            "2 - Sacar Valor.\n" \
+            "3 - Depositar.\n" \
+            "4 - Pagar Boleto.\n" \
+            "5 - Alterar Senha.\n" \
+            "6 - Sair.\n" \)
         
-        if opcao =="1":
+        if opcao == "1":
             print(f"Saldo atual é de {saldo_atual}.")
-        elif opcao=="2":
+        elif opcao == "2":
             valor_a_sacar= float(input("entre coom o valor a ser sacado: "))
             if valor_a_sacar <= (saldo_atual + limite_saldo_negativo):
-                saldo -= valor_a_sacar
+                saldo_atual -= valor_a_sacar
+                print("Saldo liberado, retire seu valor!")
+            else:
                 print("Saldo insuficiente!")
         elif opcao=="3":
             depositar = float(input("Insira o Valor a ser Depositado:"))
             if depositar > 0:
-                saldo += despositar
+                saldo_atual += despositar
             else:
                 print("valor Inválido!")
         elif opcao=="4":
             boleto = float(input("Entre com o valor do boleto"))
             if boleto < (saldo_atual + limite_saldo_negativo):
-                saldo -= boleto
+                saldo_atual -= boleto
             else:
             print("Saldo insuficiente!")
         elif opcao=="5":
             senha_antiga = input("Digite sua senha antiga: ")
-            senha_nova1 = input("Digite sua nova senha:")
+            senha_nova1 = input("Digite sua nova senha: ")
             senha_nova2 = input("Repita a senha nova: ")
             if senha_antiga == senha_usuario and senha_nova1 == senha_nova2:
                 senha_usuario = senha_nova1
@@ -72,4 +75,4 @@ while True:
             print("Atendimento finalizado!")
             break
         else:
-        print("Opção inválida!")
+            print("Opção inválida!")
