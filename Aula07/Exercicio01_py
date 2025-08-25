@@ -1,0 +1,25 @@
+"""Exercicio 1"""
+
+
+preco_ham = float(30.0)
+cupom = float(0.1)
+
+entrada = input("Qual hamburger você quer: ")
+hamburguer = "xcheddar"
+
+while True:
+    if entrada == hamburguer:
+        cupom_1 = input("Você tem cupom? (S ou N): ")
+        if cupom_1 == "S":
+            desconto = cupom * preco_ham
+            preco_des = preco_ham - desconto
+            print(preco_des)
+            break
+        elif cupom_1 == "N":
+            print("Você não tem cupom!")
+            break
+        else:
+            print("Você não tem cupom!")
+            break
+    else:
+        entrada = input("Digite novamente seu pedido: ")
