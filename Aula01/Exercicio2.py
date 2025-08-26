@@ -3,8 +3,7 @@
 Par ou Ímpar (Operadores e if-else):
 
 ○ Peça ao usuário para digitar um número inteiro.
-○ Use o operador de módulo (%) para verificar se o número é par (o resto da
-divisão por 2 é 0).
+○ Use o operador de módulo (%) para verificar se o número é par (o resto da divisão por 2 é 0).
 ○ Imprima se o número é "Par" ou "Ímpar". """
 
 # Recebo o valor pelo usuário:
