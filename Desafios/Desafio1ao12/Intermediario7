@@ -1,0 +1,19 @@
+""" Exercicio 7"""
+
+class Retangulo:
+    def __init__(self, base, altura):
+        self.base = base
+        self.altura = altura
+
+    def calcular_area(self):
+        return self.base * self.altura
+
+    def calcular_perimetro(self):
+        return 2 * (self.base + self.altura)
+
+retangulo1 = Retangulo(5, 3)
+area = retangulo1.calcular_area()
+perimetro = retangulo1.calcular_perimetro()
+
+print(f"Área do retângulo: {area}")
+print(f"Perímetro do retângulo: {perimetro}")
