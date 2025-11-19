@@ -1,9 +1,12 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 # Cada classe aqui é "traduzida" para uma tabela no banco de dados
 class Tarefa(models.Model):
+ # 'on_delete=models.CASCADE' diz ao banco:
+ # "Se o usuário for deletado, delete todas as tarefas dele também."
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 # Um campo de texto curto, com máximo de 200 caracteres
     titulo = models.CharField(max_length=200)
 # Um campo booleano (verdadeiro/falso), que por padrão é Falso
@@ -11,6 +14,7 @@ class Tarefa(models.Model):
 # Um campo de data e hora.
 # auto_now_add=True: Salva a data e hora EXATAMENTE quando o objeto é criado
     criada_em = models.DateTimeField(auto_now_add=True)
+    
 # Este é um "método mágico" do Python.
 # Ele diz ao Django como "chamar" um objeto Tarefa.
 # Em vez de "Tarefa object (1)", ele mostrará o título da tarefa.

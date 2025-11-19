@@ -17,7 +17,13 @@ Including another URLconf
 # meuprojeto/urls.py
 from django.contrib import admin
 from django.urls import path, include # 1. Importe o 'include'
+from django.contrib.auth import views as auth_views # 1. Importe as views de autenticação
+
 urlpatterns = [
 path('admin/', admin.site.urls),
-path('', include('core.urls')), # 2. Adicione esta linha
+path('', include('core.urls')), # 2. Adicione esta linha, Nossas URLs do app 'core'
+path('login/', auth_views.LoginView.as_view(template_name='login.html'), # Ela usa a View pronta 'LoginView' e diz a ela para usar nosso template
+ name='login'),
+path('logout/', auth_views.LogoutView.as_view(next_page='login'), # Ela usa a View 'LogoutView'. 'next_page' diz para onde ir após o logout
+ name='logout'),
 ]
