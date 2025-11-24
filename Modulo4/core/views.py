@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.forms import UserCreationForm # 1. Importe o form
-from django.contrib.auth import login # 2. Importe a função 'login'
-from django.contrib.auth.decorators import login_required # 1. Importe o decorador
 from .models import Tarefa
-from .forms import TarefaForm # 2. Importe nosso novo 'TarefaForm'
+from .forms import TarefaForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from  django.contrib import messages
 
 @login_required
 # Create your views here.
@@ -62,6 +63,7 @@ def concluir_tarefa(request, pk):
 # 3. A Lógica de "Update"
         tarefa.concluida = True
         tarefa.save() # Não se esqueça de salvar!
+        messages.success(request,'Parabéns! Tarefa Concluída ✓')
 # 4. Redireciona de volta para a 'home' (Padrão PRG)
     return redirect('home')
 
@@ -90,5 +92,5 @@ def register(request):
      else:
         form = UserCreationForm() # Cria um formulário de cadastro vazio
 # Prepara o contexto e renderiza o template
-    context = {'form': form} 
-    return render(request, 'register.html', context)
+        context = {'form': form} 
+        return render(request, 'register.html', context)
