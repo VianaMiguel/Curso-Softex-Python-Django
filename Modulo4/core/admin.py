@@ -6,20 +6,20 @@ from .models import Tarefa # 1. Importe seu Model
 class TarefaAdmin(admin.ModelAdmin):
 # 'list_display' é uma tupla com os nomes dos campos
 # que queremos exibir como colunas na lista
-    list_display = ('titulo', 'user', 'concluida', 'criada_em')
+    list_display = ('titulo', 'user', 'concluida', 'criada_em','project')
 
 # Adiciona uma barra lateral de filtros
 # O Django entende o tipo de campo e cria o filtro certo:
 # - 'concluida': Filtro de "Sim/Não"
 # - 'user': Filtro de lista (baseado em um ForeignKey)
 # - 'criada_em': Filtro de data (Hoje, Últimos 7 dias, Este mês, etc.)
-    list_filter = ('concluida', 'user', 'criada_em')
+    list_filter = ('concluida', 'user', 'criada_em','project')
 # Adiciona uma barra de busca
 # 'titulo': Vai buscar no campo 'titulo'
 # 'user__username': Este é avançado! Usamos o lookup '__'
 # para dizer ao Django: "Busque também no campo 'username'
 # do Model 'User' que está relacionado".
-    search_fields = ('titulo', 'user__username')
+    search_fields = ('titulo', 'user__username', 'project')
 # ----------------------------------------------------
 # NOVAS CONFIGURAÇÕES (para o formulário de edição)
 # ----------------------------------------------------

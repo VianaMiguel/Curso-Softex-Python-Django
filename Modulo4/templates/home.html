@@ -27,7 +27,13 @@ Página Inicial - Meu Site
 <ul style="list-style: none; padding: 0;">
   {% for tarefa in tarefas %}
   <li style="margin-bottom: 15px; border: 1px solid #ccc; padding: 10px;">
+    <small style="font-weight: bold; color: #555;">
+      Projeto: {{ tarefa.project.titulo }}
+    </small>
+        <br>
+
     {{ tarefa.titulo }}
+
     {% if tarefa.concluida %}
     <strong style="color: green;">(✓ Concluída)</strong>
     {% else %}
@@ -35,20 +41,25 @@ Página Inicial - Meu Site
     {% endif %}
     <br>
     <small>Criada em: {{ tarefa.criada_em|date:"d/m/Y H:i" }}</small>
-    <div style="margin-top:
-10px;">
-      <form action="{% url 'deletar_tarefa' tarefa.pk %}" method="POST" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit">Deletar</button>
-      </form>
-      {% if not tarefa.concluida %}
-      <form action="{% url 'concluir_tarefa' tarefa.pk %}" method="POST" style="display:
-inline;">
-        {% csrf_token %}
-        <button type="submit">Marcar como Concluída</button>
-      </form>
-      {% endif %}
-    </div>
+   <div style="margin-top:10px;">
+  <form action="{% url 'deletar_tarefa' tarefa.pk %}" method="POST" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit">Deletar</button>
+  </form>
+  {% if not tarefa.concluida %}
+    <form action="{% url 'concluir_tarefa' tarefa.pk %}" method="POST" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit">Marcar como Concluída</button>
+    </form>
+  {% endif %}
+  {% if tarefa.concluida %}
+    <form action="{% url 'concluir_tarefa' tarefa.pk %}" method="POST" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit">Marcar como Pendente</button>
+    </form>
+  {% endif %}
+</div>
+
   </li>
   {% empty %}
   <li>Você ainda não tem tarefas cadastradas.</li>
