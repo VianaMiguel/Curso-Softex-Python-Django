@@ -26,7 +26,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env("SECRET_KEY")
 
-SECRET_KEY='34s37sfn8^i(w8@zji!9u#dfv%czb9@#@!zg)_&5451k8v-h4#'
+SECRET_KEY='yzttq-7vwh0n!d0zclenir0y#p&aos5$vlj@-(cr*-hwwzz&n-'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/

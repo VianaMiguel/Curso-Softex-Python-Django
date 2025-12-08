@@ -8,6 +8,14 @@ venv\Scripts\activate
 pip install django djangorestframework django-environ
 djangorestframework-simplejwt
 
+python manage.py makemigrations core
+
+python manage.py migrate
+
+python manage.py runserver
+
+
+
 #Passo 3: Criar Projeto e App
 # Criar projeto Django
 django-admin startproject config .
