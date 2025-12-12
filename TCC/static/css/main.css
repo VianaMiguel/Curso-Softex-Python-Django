@@ -1,0 +1,82 @@
+:root {
+  --azul-tech: #3a7dff;
+  --roxo-digital: #6c3bff;
+  --verde-progresso: #2ecc71;
+  --cinza-neutro: #f4f4f4;
+  --cinza-escuro: #1e1e1e;
+  --branco: #ffffff;
+  --cinza-borda: #dddddd;
+}
+body {
+  font-family: Inter, sans-serif;
+  background: var(--cinza-neutro);
+  color: var(--cinza-escuro);
+  margin: 0;
+  padding: 0;
+}
+.header {
+  background: linear-gradient(90deg, var(--azul-tech), var(--roxo-digital));
+  padding: 20px;
+  color: var(--branco);
+  text-align: center;
+}
+
+"""Formulario""" .form-container {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 25px;
+  background: var(--branco);
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+
+"""Campos do formulario""" .form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  color: var(--cinza-escuro);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+"""Botão Inicial""" .btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--azul-tech);
+  color: var(--branco);
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2f6be0; /* tom mais forte */
+}
+
+"""switch_entre login e cadastro""" .switch-text {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.switch-text a {
+  color: var(--roxo-digital);
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.switch-text a:hover {
+  text-decoration: underline;
+}
