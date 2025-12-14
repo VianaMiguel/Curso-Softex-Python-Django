@@ -11,8 +11,6 @@ urlpatterns = [
     path("tarefas/<int:pk>/", DetalheTarefaAPIView.as_view(), name="detalhe-tarefa"),
     # Exercicio 2
     path(
-        "api/tarefas/contagem/",
-        ContagemTarefasAPIView.as_view(),
-        name="contagem-tarefas",
+        "tarefas/contagem/", ContagemTarefasAPIView.as_view(), name="contagem-tarefas"
     ),
 ]
