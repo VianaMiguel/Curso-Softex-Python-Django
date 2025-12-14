@@ -143,3 +143,29 @@ class ContagemTarefasAPIView(APIView):
             {"total": total, "concluidas": concluidas, "pendentes": pendentes},
             status=status.HTTP_200_OK,
         )
+
+
+# Exercicio 2 Apostila 3
+class DuplicarTarefaAPIView(APIView):
+    """
+    Endpoint para duplicar uma tarefa existente.
+    POST /api/tarefas/<pk>/duplicar/
+    """
+
+    def post(self, request, pk, format=None):
+        try:
+            tarefa_original = get_object_or_404(Tarefa, pk=pk, deletada=False)
+        except Tarefa.DoesNotExist:
+            return Response(
+                {"error": "Tarefa não encontrada"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Cria uma cópia da tarefa
+        tarefa_original.pk = None  # remove a chave primária para gerar nova
+        tarefa_original.concluida = False  # duplicada começa como pendente
+        tarefa_original.data_conclusao = None  # limpa data de conclusão
+        tarefa_original.deletada = False  # não marcada como deletada
+        tarefa_original.save()
+
+        serializer = TarefaSerializer(tarefa_original)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

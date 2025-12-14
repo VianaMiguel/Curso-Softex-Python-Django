@@ -47,6 +47,10 @@ class Tarefa(models.Model):
         default="media",
     )
     prazo = models.DateField(null=True, blank=True)
+    # exercico 1 apostila 3
+    data_conclusao = models.DateTimeField(null=True, blank=True)
+    # exercico 1 apostila 3
+    deletada = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Tarefa"

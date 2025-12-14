@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import ListaTarefasAPIView, DetalheTarefaAPIView, ContagemTarefasAPIView
+from .views import (
+    ListaTarefasAPIView,
+    DetalheTarefaAPIView,
+    ContagemTarefasAPIView,
+    DuplicarTarefaAPIView,
+)
 
 # Namespace do app (útil para reverse())
 app_name = "core"
@@ -12,5 +17,11 @@ urlpatterns = [
     # Exercicio 2
     path(
         "tarefas/contagem/", ContagemTarefasAPIView.as_view(), name="contagem-tarefas"
+    ),
+    # Exercicio 2 Apostila 3
+    path(
+        "tarefas/<int:pk>/duplicar/",
+        DuplicarTarefaAPIView.as_view(),
+        name="duplicar-tarefa",
     ),
 ]
