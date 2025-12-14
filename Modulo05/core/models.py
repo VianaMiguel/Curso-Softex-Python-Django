@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+
 
 """
 Model para representar uma tarefa de usuário.
@@ -12,6 +15,12 @@ Cada tarefa tem:
 
 
 class Tarefa(models.Model):
+    # Exercico 1 Apostila 2
+    PRIORIDADE_CHOICES = [
+        ("baixa", "Baixa"),
+        ("media", "Média"),
+        ("alta", "Alta"),
+    ]
     # ForeignKey: Relacionamento Many-to-One
     # Cada Tarefa pertence a UM usuário
     # Um usuário pode ter VÁRIAS tarefas
@@ -31,6 +40,14 @@ class Tarefa(models.Model):
     # auto_now_add=True: Preenche automaticamente na criação
     criada_em = models.DateTimeField(auto_now_add=True, verbose_name="Criada em")
 
+    # Exercicio 1 Apostila 2
+    prioridade = models.CharField(
+        max_length=10,
+        choices=PRIORIDADE_CHOICES,
+        default="media",
+    )
+    prazo = models.DateField(null=True, blank=True)
+
     class Meta:
         verbose_name = "Tarefa"
         verbose_name_plural = "Tarefas"
@@ -39,3 +56,17 @@ class Tarefa(models.Model):
         def __str__(self):
             """Representação em string (usado no admin)"""
             return f"{self.titulo} ({'✓' if self.concluida else '✗'})"
+
+    def clean(self):
+        # 1. O prazo não pode ser no passado
+        # Data de hoje
+        hoje = timezone.now().date()
+        # O prazo não pode ser no passado
+        if self.prazo and self.prazo < hoje:  # sem parênteses!
+            raise ValidationError("O prazo não pode ser no passado.")
+
+        # Se concluída=False, prazo é obrigatório
+        if not self.concluida and not self.prazo:
+            raise ValidationError(
+                "O prazo é obrigatório quando a tarefa não está concluída."
+            )
