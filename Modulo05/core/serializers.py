@@ -1,5 +1,10 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.utils import timezone
 from .models import Tarefa
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+
 
 
 class TarefaSerializer(serializers.ModelSerializer):
@@ -10,7 +15,11 @@ class TarefaSerializer(serializers.ModelSerializer):
     2. Converter JSON → Tarefa (desserialização)
     3. Validar dados de entrada
     """
-
+    """
+    Serializer para Tarefa com segurança.
+    O campo 'user' é exibido (read-only) mas NÃO aceito na entrada."""
+    # 1. Mostra o username do usuário em vez do ID (read-only na saída)
+    user = serializers.StringRelatedField(read_only=True)
     class Meta:
         model = Tarefa
         fields = [
@@ -26,7 +35,7 @@ class TarefaSerializer(serializers.ModelSerializer):
             "deletada",
         ]
         # Campos gerados automaticamente (não aceitos na entrada)
-        read_only_fields = ["id", "criada_em"]
+        read_only_fields = ["id", 'user', "criada_em"]
 
     # Exercico 1 Apostila 3
     def create(self, validated_data):
@@ -49,3 +58,20 @@ class TarefaSerializer(serializers.ModelSerializer):
             instance.data_conclusao = None
 
         return super().update(instance, validated_data)
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Serializer customizado para incluir campos extras no JWT."""
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Adicionar campos customizados ao payload
+        token['username'] = user.username
+        token['email'] = user.email
+        token['is_staff'] = user.is_staff
+        return token
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """View que usa o serializer customizado."""
+
+    serializer_class = CustomTokenObtainPairSerializer

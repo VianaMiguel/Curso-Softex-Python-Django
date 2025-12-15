@@ -25,7 +25,7 @@ class Tarefa(models.Model):
     # Cada Tarefa pertence a UM usuário
     # Um usuário pode ter VÁRIAS tarefas
     # on_delete=CASCADE: Se o usuário for deletado, suas tarefas também são
-
+    """Model de Tarefa com segurança. O campo 'user' é OBRIGATÓRIO."""
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="tarefas", verbose_name="Usuário"
     )

@@ -16,10 +16,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from core.views import (TarefaListCreateAPIView,TarefaRetrieveUpdateDestroyAPIView,LogoutView,CustomTokenObtainPairView,)
+ # Login (obter access e refresh tokens) # Renovar token
+from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView,)
+from rest_framework_simplejwt.views import TokenRefreshView
+
 
 urlpatterns = [
 # Admin do Django
 path('admin/', admin.site.urls),
 # URLs do app core (prefixo: /api/)
 path('api/', include('core.urls')),
+# JWT: Endpoints de autenticação
+path('api/token/',TokenObtainPairView.as_view(),name='token_obtain_pair'),
+path('api/token/refresh/',TokenRefreshView.as_view(),name='token_refresh'),
+path('api/token/',CustomTokenObtainPairView.as_view(), # ← View customizada
+ name='token_obtain_pair'),
+path('tarefas/', TarefaListCreateAPIView.as_view(), name='tarefa-list-create'),
+path('tarefas/<int:pk>/', TarefaRetrieveUpdateDestroyAPIView.as_view(), name='tarefa-detail'),
+path('logout/', LogoutView.as_view(), name='logout'), # ← Novo endpoint
+# App core
+path('api/', include('core.urls')),
+
 ]

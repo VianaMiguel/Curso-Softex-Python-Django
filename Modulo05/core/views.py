@@ -3,8 +3,13 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from .models import Tarefa
-from .serializers import TarefaSerializer
+from .serializers import TarefaSerializer, CustomTokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 
 class ListaTarefasAPIView(APIView):
@@ -169,3 +174,63 @@ class DuplicarTarefaAPIView(APIView):
 
         serializer = TarefaSerializer(tarefa_original)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class MinhaView(APIView):
+# Adicionando a permissão
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+# Se chegou aqui, request.user é SEMPRE um objeto User logado
+        print(f"Usuário autenticado: {request.user.username}")
+
+class TarefaListCreateAPIView(generics.ListCreateAPIView):
+    """Lista tarefas e permite a criação de novas tarefas. PROTEGIDA: Requer autenticação JWT."""
+
+    queryset = Tarefa.objects.all()
+    serializer_class = TarefaSerializer
+    permission_classes = [IsAuthenticated]  # ← Proteção
+    
+    def get_queryset(self):
+        return Tarefa.objects.filter(user=self.request.user)
+
+    # MÉTODO CHAVE: Injeta o usuário logado antes de salvar o objeto
+    def perform_create(self, serializer):
+        """Associa a tarefa ao usuário logado (request.user) automaticamente."""
+        # request.user é garantido como autenticado pelo IsAuthenticated
+        serializer.save(user=self.request.user)
+# A URL deve apontar para esta view em core/urls.py
+# path('tarefas/', TarefaListCreateAPIView.as_view(), name='tarefa-list-create'),
+
+class TarefaRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Detalhes de tarefa, atualização e exclusão.
+    PROTEGIDA: Requer autenticação JWT.
+    """
+
+    queryset = Tarefa.objects.all()
+    serializer_class = TarefaSerializer
+    permission_classes = [IsAuthenticated]  # ← Proteção
+
+# A URL deve apontar para esta view em core/urls.py
+# path('tarefas/<int:pk>/', TarefaRetrieveUpdateDestroyAPIView.as_view(), name='tarefa-detail'),
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+            token = RefreshToken(refresh_token)
+            token.blacklist()  # Adiciona o token à lista negra
+            return Response(
+                {"detail": "Logout realizado com sucesso."},
+                status=status.HTTP_205_RESET_CONTENT  # 205 = "reset content"
+            )
+        except Exception:
+            # Captura exceções como token inválido ou já expirado
+            return Response(
+                {"detail": "Token inválido."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+class CustomTokenObtainPairView(TokenObtainPairView):
+#View que usa o serializer customizado."""
+    serializer_class = CustomTokenObtainPairSerializer
