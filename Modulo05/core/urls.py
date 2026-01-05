@@ -4,6 +4,9 @@ from .views import (
     DetalheTarefaAPIView,
     ContagemTarefasAPIView,
     DuplicarTarefaAPIView,
+    TarefaListCreateAPIView,  
+    TarefaRetrieveUpdateDestroyAPIView, 
+    RegisterView 
 )
 
 # Namespace do app (útil para reverse())
@@ -24,4 +27,9 @@ urlpatterns = [
         DuplicarTarefaAPIView.as_view(),
         name="duplicar-tarefa",
     ),
+    path('tarefas/', TarefaListCreateAPIView.as_view(), name='tarefas-list'), 
+    path('tarefas/<int:pk>/', TarefaRetrieveUpdateDestroyAPIView.as_view(), 
+        name='tarefas-detail'),
+    # Nova rota de registro 
+    path('register/', RegisterView.as_view(), name='register'), 
 ]
