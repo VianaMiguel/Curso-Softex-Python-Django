@@ -2,4 +2,4 @@ __pycache__
 .vscode
 *.db
 .venv
-.env
+""##__.env""" apos terminar o curso mudar essen env para que não save os daodos sensibeis e senhas

@@ -32,3 +32,39 @@ python manage.py runserver
 django-admin startproject config .
 # Criar app core
 python manage.py startapp core
+
+
+
+
+
+
+
+
+
+
+
+""""""
+Como usar isso NA PRÁTICA (passo a passo)
+1️⃣ Instale o coverage (se não tiver)
+pip install coverage
+
+2️⃣ Rode seus testes com coverage
+coverage run manage.py test
+
+
+📌 Isso não mostra nada ainda, só coleta dados.
+
+3️⃣ Gere o relatório HTML
+coverage html
+
+4️⃣ Abra no navegador
+
+No Explorer:
+
+htmlcov/index.html
+
+
+Clique duas vezes ou:
+
+botão direito → abrir com navegador
+""""""
