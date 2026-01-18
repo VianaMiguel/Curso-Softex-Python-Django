@@ -35,7 +35,4 @@ path('api/token/',CustomTokenObtainPairView.as_view(), # ← View customizada
 path('tarefas/', TarefaListCreateAPIView.as_view(), name='tarefa-list-create'),
 path('tarefas/<int:pk>/', TarefaRetrieveUpdateDestroyAPIView.as_view(), name='tarefa-detail'),
 path('logout/', LogoutView.as_view(), name='logout'), # ← Novo endpoint
-# App core
-path('api/', include('core.urls')),
-
 ]

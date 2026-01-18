@@ -63,3 +63,16 @@ class ValidacaoTituloTest(TestCase):
             with self.subTest(titulo=titulo): 
                 serializer = TarefaSerializer(data={'titulo': titulo}) 
                 self.assertFalse(serializer.is_valid())
+                
+class TarefaSerializerTest(TestCase): # Exercício 1 Apostila 6
+    def test_tarefa_alta_nao_pode_ser_concluida(self):
+        data = {
+            "titulo": "Urgente",
+            "prioridade": "alta",
+            "concluida": True 
+            } 
+        serializer = TarefaSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn("concluida", serializer.errors)
+        
+        

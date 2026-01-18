@@ -139,8 +139,8 @@ class TarefaListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return Tarefa.objects.filter(user=user)
+        #user = self.request.user
+        return Tarefa.objects.filter(user=self.request.user).select_related("user")
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -198,3 +198,19 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = [AllowAny]
     serializer_class = UserRegistrationSerializer
+
+
+class TarefaEstatisticasAPIView(APIView):
+    """ Endpoint para retornar estatísticas das tarefas do usuário logado. GET /api/tarefas/estatisticas/ """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        tarefas = Tarefa.objects.filter(user=user)
+        total = tarefas.count()
+        concluidas = tarefas.filter(concluida=True).count()
+        pendentes = tarefas.filter(concluida=False).count()
+        return Response(
+            {"total": total, "concluidas": concluidas, "pendentes": pendentes},
+            status=status.HTTP_200_OK,
+        )

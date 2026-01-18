@@ -1,3 +1,4 @@
+import time
 from django.test import TestCase
 from rest_framework.test import APITestCase
 from rest_framework import status
@@ -40,7 +41,7 @@ class TarefaAPITest(APITestCase):
         # ------------------ Testes de Auth ------------------
     def test_acesso_sem_token_negado(self):
         """Testa que endpoint protegido retorna 401 para anônimos."""
-        url = reverse('tarefas-list')
+        url = reverse('core:tarefas-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         
@@ -72,7 +73,7 @@ class TarefaAPITest(APITestCase):
         # Autentica como User1
         token = self.obter_token('usuario1', 'senha123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-        url = reverse('tarefas-list')
+        url = reverse('core:tarefas-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1) # User1 tem 1 tarefa, User2 tem outra
@@ -84,15 +85,16 @@ class TarefaAPITest(APITestCase):
         """
         token = self.obter_token('usuario1', 'senha123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-        url = reverse('tarefas-list')
-        dados = {
-        'titulo': 'Nova Tarefa via API',
-        'concluida': False
-        }
+        url = reverse('core:tarefas-list')
+        dados = { 'titulo': 'TarefaTeste', # apenas letras,
+                  'descricao': 'Descrição da tarefa',
+                  'prioridade': 'media',
+                  'concluida': False }
         # format='json' é crucial para APIs REST
         response = self.client.post(url, dados, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['titulo'], 'Nova Tarefa via API')
+        self.assertEqual(response.data['titulo'], 'TarefaTeste')
+
         # Verificação extra: Confere se salvou no banco corretamente
         tarefa_criada = Tarefa.objects.get(id=response.data['id'])
         self.assertEqual(tarefa_criada.user, self.user1)
@@ -101,7 +103,7 @@ class TarefaAPITest(APITestCase):
         """Testa atualização parcial (PATCH) em tarefa própria."""
         token = self.obter_token('usuario1', 'senha123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-        url = reverse('tarefas-detail', kwargs={'pk': self.tarefa_user1.pk})
+        url = reverse('core:tarefas-detail', kwargs={'pk': self.tarefa_user1.pk})   
         dados = {'concluida': True}
         response = self.client.patch(url, dados, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -114,7 +116,7 @@ class TarefaAPITest(APITestCase):
         token = self.obter_token('usuario1', 'senha123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
         # Tenta acessar tarefa do user2
-        url = reverse('tarefas-detail', kwargs={'pk': self.tarefa_user2.pk})
+        url = reverse('core:tarefas-detail', kwargs={'pk': self.tarefa_user2.pk})
         response = self.client.get(url)
         # O ideal é 404 Not Found (para não revelar que o ID existe)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -123,7 +125,7 @@ class TarefaAPITest(APITestCase):
         """Testa que usuário sem permissão específica recebe 403 Forbidden."""
         token = self.obter_token('usuario1', 'senha123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-        url = reverse('tarefas-detail', kwargs={'pk': self.tarefa_user1.pk})
+        url = reverse('core:tarefas-detail', kwargs={'pk': self.tarefa_user1.pk})
         response = self.client.delete(url)
         
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -134,7 +136,7 @@ class TarefaAPITest(APITestCase):
         self.user1.groups.add(grupo_gerente)
         token = self.obter_token('usuario1', 'senha123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
-        url = reverse('tarefas-detail', kwargs={'pk': self.tarefa_user1.pk})
+        url = reverse('core:tarefas-detail', kwargs={'pk': self.tarefa_user1.pk})
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         # Verifica se sumiu do banco
@@ -147,7 +149,7 @@ class RegisterAPITest(APITestCase):
             self.grupo_comum = Group.objects.create(name='Comum')
         def test_cadastro_usuario_sucesso(self):
             """Testa o fluxo feliz de cadastro."""
-            url = reverse('register')
+            url = reverse('core:register')
             dados = {
             'username': 'novousuario',
             'email': 'novo@email.com',
@@ -167,7 +169,7 @@ class RegisterAPITest(APITestCase):
         def test_cadastro_username_duplicado(self):
             """Testa a validação de unicidade do banco."""
             User.objects.create_user(username='existente', password='123')
-            url = reverse('register')
+            url = reverse('core:register')
             dados = {
             'username': 'existente', # Username já em uso
             'email': 'outro@email.com',
@@ -176,4 +178,60 @@ class RegisterAPITest(APITestCase):
             response = self.client.post(url, dados, format='json')
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             self.assertIn('username', response.data)
-                    
+class TarefaEstatisticasAPITest(APITestCase): # Exercício 3 Apostila 6
+    def setUp(self):
+        self.user = User.objects.create_user(username='usuario', password='senha123') 
+        self.url = reverse('core:tarefas-estatisticas')
+        # Cria 10 tarefas (6 concluídas, 4 pendentes)
+        for i in range(6):
+            Tarefa.objects.create(user=self.user, titulo=f'Tarefa {i}', concluida=True)
+        for i in range(4):
+            Tarefa.objects.create(user=self.user, titulo=f'Tarefa {i+6}', concluida=False)
+
+    def obter_token(self):
+        url = reverse('token_obtain_pair')
+        response = self.client.post(url, {'username': 'usuario', 'password': 'senha123'}, format='json')
+        return response.data['access']
+
+    def test_sem_token_retorna_401(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_com_token_retorna_estatisticas_corretas(self):
+        token = self.obter_token()
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['total'], 10)
+        self.assertEqual(response.data['concluidas'], 6)
+        self.assertEqual(response.data['pendentes'], 4)
+
+class TarefaPerformanceAPITest(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        # Cria um usuário
+        cls.user = User.objects.create_user(username="usuario_perf", password="senha123")
+        # Cria 1000 tarefas para esse usuário
+        tarefas = [Tarefa(user=cls.user, titulo=f"Tarefa{i}", concluida=False) for i in range(1000)]
+        Tarefa.objects.bulk_create(tarefas)
+        cls.url = reverse("core:tarefas-list")
+
+    def obter_token(self):
+        url = reverse("token_obtain_pair")
+        response = self.client.post(
+            url,
+            {"username": "usuario_perf", "password": "senha123"},
+            format="json"
+        )
+        return response.data["access"]
+
+    def test_listagem_rapida(self):
+        token = self.obter_token()
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+        start = time.time()
+        response = self.client.get(self.url)
+        end = time.time()
+        # Verifica se resposta foi OK
+        self.assertEqual(response.status_code, 200)
+        # SLA: deve ser menor que 2 segundos
+        self.assertLess(end - start, 2.0)
